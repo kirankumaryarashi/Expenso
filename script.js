@@ -5,6 +5,7 @@ let transactions =
 const form = document.getElementById("transaction-form");
 const transactionList = document.getElementById("transaction-list");
 
+// Add transaction
 form.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -23,21 +24,27 @@ form.addEventListener("submit", function (event) {
     };
 
     transactions.push(transaction);
-    localStorage.setItem(
-    "transactions",
-    JSON.stringify(transactions)
-);
 
+    saveTransactions();
     displayTransactions();
     updateSummary();
 
     form.reset();
 });
 
+// Save transactions to Local Storage
+function saveTransactions() {
+    localStorage.setItem(
+        "transactions",
+        JSON.stringify(transactions)
+    );
+}
+
+// Display transactions
 function displayTransactions() {
     transactionList.innerHTML = "";
 
-    transactions.forEach(function (transaction) {
+    transactions.forEach(function (transaction, index) {
         const li = document.createElement("li");
 
         li.innerHTML = `
@@ -46,17 +53,31 @@ function displayTransactions() {
                 <br>
                 <small>${transaction.category} | ${transaction.date}</small>
             </div>
+
             <span>
                 ${transaction.type === "income" ? "+" : "-"}
                 ₹${transaction.amount}
             </span>
+
+            <button onclick="deleteTransaction(${index})">
+                Delete
+            </button>
         `;
 
         transactionList.appendChild(li);
     });
 }
 
+// Delete transaction
+function deleteTransaction(index) {
+    transactions.splice(index, 1);
 
+    saveTransactions();
+    displayTransactions();
+    updateSummary();
+}
+
+// Update Income, Expense and Balance
 function updateSummary() {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -69,7 +90,7 @@ function updateSummary() {
         }
     });
 
-    let balance = totalIncome - totalExpense;
+    const balance = totalIncome - totalExpense;
 
     document.getElementById("total-income").innerText =
         "₹" + totalIncome;
@@ -80,5 +101,7 @@ function updateSummary() {
     document.getElementById("total-balance").innerText =
         "₹" + balance;
 }
+
+// Load saved transactions when page opens
 displayTransactions();
 updateSummary();
