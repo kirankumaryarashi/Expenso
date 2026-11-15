@@ -1,5 +1,6 @@
 
-const transactions = [];
+let transactions =
+    JSON.parse(localStorage.getItem("transactions")) || [];
 
 const form = document.getElementById("transaction-form");
 const transactionList = document.getElementById("transaction-list");
@@ -22,6 +23,10 @@ form.addEventListener("submit", function (event) {
     };
 
     transactions.push(transaction);
+    localStorage.setItem(
+    "transactions",
+    JSON.stringify(transactions)
+);
 
     displayTransactions();
     updateSummary();
@@ -75,3 +80,5 @@ function updateSummary() {
     document.getElementById("total-balance").innerText =
         "₹" + balance;
 }
+displayTransactions();
+updateSummary();
