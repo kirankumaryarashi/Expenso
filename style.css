@@ -194,6 +194,52 @@ button:hover {
 .chart-container canvas {
     max-height: 320px;
 }
+/* Responsive Design */
 
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .transaction-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .transaction-filters input,
+    .transaction-filters select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .chart-container {
+        padding: 12px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
 
 }
