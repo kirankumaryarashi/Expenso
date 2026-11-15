@@ -5,7 +5,19 @@ let transactions =
 const form = document.getElementById("transaction-form");
 const transactionList = document.getElementById("transaction-list");
 
-// Add transaction
+let editingIndex = null;
+
+// Get the submit button
+const submitButton = form.querySelector('button[type="submit"]');
+
+// Create Cancel Edit button
+const cancelButton = document.createElement("button");
+cancelButton.type = "button";
+cancelButton.textContent = "Cancel Edit";
+cancelButton.hidden = true;
+form.appendChild(cancelButton);
+
+// Add or update transaction
 form.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -23,16 +35,23 @@ form.addEventListener("submit", function (event) {
         date
     };
 
-    transactions.push(transaction);
+    if (editingIndex === null) {
+        transactions.push(transaction);
+    } else {
+        transactions[editingIndex] = transaction;
+    }
 
     saveTransactions();
     displayTransactions();
     updateSummary();
 
+    editingIndex = null;
     form.reset();
+    submitButton.textContent = "Add Transaction";
+    cancelButton.hidden = true;
 });
 
-// Save transactions to Local Storage
+// Save transactions
 function saveTransactions() {
     localStorage.setItem(
         "transactions",
@@ -47,37 +66,93 @@ function displayTransactions() {
     transactions.forEach(function (transaction, index) {
         const li = document.createElement("li");
 
-        li.innerHTML = `
-            <div>
-                <strong>${transaction.title}</strong>
-                <br>
-                <small>${transaction.category} | ${transaction.date}</small>
-            </div>
+        const details = document.createElement("div");
 
-            <span>
-                ${transaction.type === "income" ? "+" : "-"}
-                ₹${transaction.amount}
-            </span>
+        const title = document.createElement("strong");
+        title.textContent = transaction.title;
 
-            <button onclick="deleteTransaction(${index})">
-                Delete
-            </button>
-        `;
+        const info = document.createElement("small");
+        info.textContent =
+            transaction.category + " | " + transaction.date;
+
+        details.appendChild(title);
+        details.appendChild(document.createElement("br"));
+        details.appendChild(info);
+
+        const amount = document.createElement("span");
+        amount.textContent =
+            (transaction.type === "income" ? "+" : "-") +
+            "₹" + transaction.amount;
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", function () {
+            editTransaction(index);
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", function () {
+            deleteTransaction(index);
+        });
+
+        li.appendChild(details);
+        li.appendChild(amount);
+        li.appendChild(editButton);
+        li.appendChild(deleteButton);
 
         transactionList.appendChild(li);
     });
 }
 
+// Edit transaction
+function editTransaction(index) {
+    const transaction = transactions[index];
+
+    document.getElementById("title").value = transaction.title;
+    document.getElementById("amount").value = transaction.amount;
+    document.getElementById("type").value = transaction.type;
+    document.getElementById("category").value = transaction.category;
+    document.getElementById("date").value = transaction.date;
+
+    editingIndex = index;
+
+    submitButton.textContent = "Update Transaction";
+    cancelButton.hidden = false;
+
+    form.scrollIntoView({ behavior: "smooth" });
+}
+
+// Cancel editing
+cancelButton.addEventListener("click", function () {
+    editingIndex = null;
+    form.reset();
+
+    submitButton.textContent = "Add Transaction";
+    cancelButton.hidden = true;
+});
+
 // Delete transaction
 function deleteTransaction(index) {
     transactions.splice(index, 1);
+
+    if (editingIndex === index) {
+        editingIndex = null;
+        form.reset();
+        submitButton.textContent = "Add Transaction";
+        cancelButton.hidden = true;
+    } else if (editingIndex !== null && index < editingIndex) {
+        editingIndex--;
+    }
 
     saveTransactions();
     displayTransactions();
     updateSummary();
 }
 
-// Update Income, Expense and Balance
+// Update summary
 function updateSummary() {
     let totalIncome = 0;
     let totalExpense = 0;
@@ -92,16 +167,16 @@ function updateSummary() {
 
     const balance = totalIncome - totalExpense;
 
-    document.getElementById("total-income").innerText =
+    document.getElementById("total-income").textContent =
         "₹" + totalIncome;
 
-    document.getElementById("total-expense").innerText =
+    document.getElementById("total-expense").textContent =
         "₹" + totalExpense;
 
-    document.getElementById("total-balance").innerText =
+    document.getElementById("total-balance").textContent =
         "₹" + balance;
 }
 
-// Load saved transactions when page opens
+// Load saved transactions
 displayTransactions();
 updateSummary();
