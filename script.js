@@ -5,12 +5,14 @@ let transactions =
 const form = document.getElementById("transaction-form");
 const transactionList = document.getElementById("transaction-list");
 
+const searchInput = document.getElementById("transaction-search");
+const typeFilter = document.getElementById("filter-type");
+const categoryFilter = document.getElementById("filter-category");
+
 let editingIndex = null;
 
-// Get the submit button
 const submitButton = form.querySelector('button[type="submit"]');
 
-// Create Cancel Edit button
 const cancelButton = document.createElement("button");
 cancelButton.type = "button";
 cancelButton.textContent = "Cancel Edit";
@@ -21,18 +23,12 @@ form.appendChild(cancelButton);
 form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const title = document.getElementById("title").value;
-    const amount = Number(document.getElementById("amount").value);
-    const type = document.getElementById("type").value;
-    const category = document.getElementById("category").value;
-    const date = document.getElementById("date").value;
-
     const transaction = {
-        title,
-        amount,
-        type,
-        category,
-        date
+        title: document.getElementById("title").value,
+        amount: Number(document.getElementById("amount").value),
+        type: document.getElementById("type").value,
+        category: document.getElementById("category").value,
+        date: document.getElementById("date").value
     };
 
     if (editingIndex === null) {
@@ -59,11 +55,48 @@ function saveTransactions() {
     );
 }
 
-// Display transactions
+// Search and filter events
+searchInput.addEventListener("input", displayTransactions);
+typeFilter.addEventListener("change", displayTransactions);
+categoryFilter.addEventListener("change", displayTransactions);
+
+// Display filtered transactions
 function displayTransactions() {
     transactionList.innerHTML = "";
 
-    transactions.forEach(function (transaction, index) {
+    const searchText = searchInput.value.toLowerCase();
+    const selectedType = typeFilter.value;
+    const selectedCategory = categoryFilter.value;
+
+    const filteredTransactions = transactions
+        .map((transaction, index) => ({ transaction, index }))
+        .filter(item => {
+            const t = item.transaction;
+
+            const matchesSearch =
+                t.title.toLowerCase().includes(searchText);
+
+            const matchesType =
+                selectedType === "all" || t.type === selectedType;
+
+            const matchesCategory =
+                selectedCategory === "all" ||
+                t.category === selectedCategory;
+
+            return matchesSearch && matchesType && matchesCategory;
+        });
+
+    if (filteredTransactions.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No matching transactions found.";
+        transactionList.appendChild(li);
+        return;
+    }
+
+    filteredTransactions.forEach(function (item) {
+        const transaction = item.transaction;
+        const index = item.index;
+
         const li = document.createElement("li");
 
         const details = document.createElement("div");
@@ -165,8 +198,6 @@ function updateSummary() {
         }
     });
 
-    const balance = totalIncome - totalExpense;
-
     document.getElementById("total-income").textContent =
         "₹" + totalIncome;
 
@@ -174,7 +205,7 @@ function updateSummary() {
         "₹" + totalExpense;
 
     document.getElementById("total-balance").textContent =
-        "₹" + balance;
+        "₹" + (totalIncome - totalExpense);
 }
 
 // Load saved transactions
