@@ -9,6 +9,8 @@ const searchInput = document.getElementById("transaction-search");
 const typeFilter = document.getElementById("filter-type");
 const categoryFilter = document.getElementById("filter-category");
 
+let categoryChart = null;
+let comparisonChart = null;
 let editingIndex = null;
 
 const submitButton = form.querySelector('button[type="submit"]');
@@ -206,7 +208,85 @@ function updateSummary() {
 
     document.getElementById("total-balance").textContent =
         "₹" + (totalIncome - totalExpense);
+
+        updateCharts(totalIncome, totalExpense);
 }
+
+function updateCharts(totalIncome, totalExpense) {
+
+    // Calculate expenses category-wise
+    const categoryTotals = {};
+
+    transactions.forEach(function (transaction) {
+        if (transaction.type === "expense") {
+            const category = transaction.category;
+
+            categoryTotals[category] =
+                (categoryTotals[category] || 0) +
+                transaction.amount;
+        }
+    });
+
+    const categories = Object.keys(categoryTotals);
+    const amounts = Object.values(categoryTotals);
+
+    // Create or update category chart
+    if (categoryChart) {
+        categoryChart.data.labels = categories;
+        categoryChart.data.datasets[0].data = amounts;
+        categoryChart.update();
+    } else {
+        categoryChart = new Chart(
+            document.getElementById("categoryChart"),
+            {
+                type: "doughnut",
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: "Expenses",
+                        data: amounts
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            }
+        );
+    }
+
+    // Create or update income vs expense chart
+    if (comparisonChart) {
+        comparisonChart.data.datasets[0].data = [
+            totalIncome,
+            totalExpense
+        ];
+        comparisonChart.update();
+    } else {
+        comparisonChart = new Chart(
+            document.getElementById("comparisonChart"),
+            {
+                type: "bar",
+                data: {
+                    labels: ["Income", "Expenses"],
+                    datasets: [{
+                        label: "Amount (₹)",
+                        data: [totalIncome, totalExpense]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+        );
+    }
+}
+
 
 // Load saved transactions
 displayTransactions();
