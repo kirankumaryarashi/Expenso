@@ -312,79 +312,127 @@ function updateSummary() {
 }
 
 
-function updateCharts(totalIncome, totalExpense) {
 
-    // Calculate expenses category-wise
+function updateCharts() {
+
+    // Calculate expenses by category
     const categoryTotals = {};
 
-    transactions.forEach(function (transaction) {
-        if (transaction.type === "expense") {
-            const category = transaction.category;
+    transactions
+        .filter(transaction => transaction.type === "expense")
+        .forEach(transaction => {
+            categoryTotals[transaction.category] =
+                (categoryTotals[transaction.category] || 0) +
+                Number(transaction.amount);
+        });
 
-            categoryTotals[category] =
-                (categoryTotals[category] || 0) +
-                transaction.amount;
-        }
-    });
+    const categoryLabels = Object.keys(categoryTotals);
+    const categoryValues = Object.values(categoryTotals);
 
-    const categories = Object.keys(categoryTotals);
-    const amounts = Object.values(categoryTotals);
-
-    // Create or update category chart
+    // Category Doughnut Chart
     if (categoryChart) {
-        categoryChart.data.labels = categories;
-        categoryChart.data.datasets[0].data = amounts;
-        categoryChart.update();
-    } else {
-        categoryChart = new Chart(
-            document.getElementById("categoryChart"),
-            {
-                type: "doughnut",
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        label: "Expenses",
-                        data: amounts
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true
-                }
-            }
-        );
+        categoryChart.destroy();
     }
 
-    // Create or update income vs expense chart
+    categoryChart = new Chart(
+        document.getElementById("categoryChart"),
+        {
+            type: "doughnut",
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryValues,
+                    backgroundColor: [
+                        "#6c63ff",
+                        "#16a36a",
+                        "#f59e0b",
+                        "#e05260",
+                        "#38bdf8",
+                        "#a78bfa",
+                        "#64748b"
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        }
+    );
+
+
+    // Calculate expenses by month
+    const monthlyTotals = {};
+
+    transactions
+        .filter(transaction => transaction.type === "expense")
+        .forEach(transaction => {
+
+            const month = String(transaction.date).slice(0, 7);
+
+            if (month) {
+                monthlyTotals[month] =
+                    (monthlyTotals[month] || 0) +
+                    Number(transaction.amount);
+            }
+        });
+
+    const sortedMonths = Object.keys(monthlyTotals).sort();
+
+    const trendLabels = sortedMonths.map(month => {
+        const [year, monthNumber] = month.split("-");
+        return new Date(
+            Number(year),
+            Number(monthNumber) - 1
+        ).toLocaleDateString("en-IN", {
+            month: "short",
+            year: "numeric"
+        });
+    });
+
+    const trendValues = sortedMonths.map(
+        month => monthlyTotals[month]
+    );
+
+    // Expense Trends Line Chart
     if (comparisonChart) {
-        comparisonChart.data.datasets[0].data = [
-            totalIncome,
-            totalExpense
-        ];
-        comparisonChart.update();
-    } else {
-        comparisonChart = new Chart(
-            document.getElementById("comparisonChart"),
-            {
-                type: "bar",
-                data: {
-                    labels: ["Income", "Expenses"],
-                    datasets: [{
-                        label: "Amount (₹)",
-                        data: [totalIncome, totalExpense]
-                    }]
+        comparisonChart.destroy();
+    }
+
+    comparisonChart = new Chart(
+        document.getElementById("comparisonChart"),
+        {
+            type: "line",
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: "Monthly Expenses",
+                    data: trendValues,
+                    borderColor: "#6c63ff",
+                    backgroundColor: "rgba(108, 99, 255, 0.12)",
+                    fill: true,
+                    tension: 0.35,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#6c63ff"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
-        );
-    }
+        }
+    );
 }
 
 
