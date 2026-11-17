@@ -313,6 +313,7 @@ function updateSummary() {
 
 
 
+
 function updateCharts() {
 
     // Calculate expenses by category
@@ -343,20 +344,31 @@ function updateCharts() {
                 datasets: [{
                     data: categoryValues,
                     backgroundColor: [
-                        "#6c63ff",
+                        "#387ED1",
                         "#16a36a",
                         "#f59e0b",
                         "#e05260",
                         "#38bdf8",
-                        "#a78bfa",
-                        "#64748b"
+                        "#64748b",
+                        "#94a3b8"
                     ],
-                    borderWidth: 0
+                    borderWidth: 2,
+                    borderColor: "#ffffff",
+                    hoverOffset: 6
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: {
+                            usePointStyle: true,
+                            padding: 16
+                        }
+                    }
+                }
             }
         }
     );
@@ -382,6 +394,7 @@ function updateCharts() {
 
     const trendLabels = sortedMonths.map(month => {
         const [year, monthNumber] = month.split("-");
+
         return new Date(
             Number(year),
             Number(monthNumber) - 1
@@ -409,12 +422,15 @@ function updateCharts() {
                 datasets: [{
                     label: "Monthly Expenses",
                     data: trendValues,
-                    borderColor: "#6c63ff",
-                    backgroundColor: "rgba(108, 99, 255, 0.12)",
+                    borderColor: "#387ED1",
+                    backgroundColor: "rgba(56, 126, 209, 0.12)",
                     fill: true,
                     tension: 0.35,
                     pointRadius: 4,
-                    pointBackgroundColor: "#6c63ff"
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: "#387ED1",
+                    pointBorderColor: "#ffffff",
+                    pointBorderWidth: 2
                 }]
             },
             options: {
@@ -423,11 +439,24 @@ function updateCharts() {
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        backgroundColor: "#20243a",
+                        padding: 12,
+                        displayColors: false
                     }
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        grid: {
+                            color: "#eceef4"
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
                     }
                 }
             }
