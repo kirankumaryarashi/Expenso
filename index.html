@@ -5,149 +5,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Expenso | Personal Expense Tracker</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="app-layout">
 
-        <!-- Header -->
-        <header>
-            <h1>Expenso 💰</h1>
-            <p>Manage your money smarter</p>
-        </header>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>Expenso<span>.</span></h2>
+                <p>Personal Finance</p>
+            </div>
 
-        <!-- Dashboard -->
-        <section class="summary">
+            <nav class="sidebar-nav">
+                <p class="nav-heading">MENU</p>
 
-            <div class="card">
-    <h3>Total Income</h3>
-    <p id="total-income">₹0</p>
-</div>
+                <a href="#dashboard" class="nav-link active">
+                    <span>▦</span> Dashboard
+                </a>
 
-<!-- Expense Card -->
-<div class="card">
-    <h3>Total Expense</h3>
-    <p id="total-expense">₹0</p>
-</div>
+                <a href="#history" class="nav-link">
+                    <span>↔</span> Transactions
+                </a>
 
-<!-- Balance Card -->
-<div class="card">
-    <h3>Balance</h3>
-    <p id="total-balance">₹0</p>
-</div>
+                <a href="#analytics" class="nav-link">
+                    <span>◷</span> Categories
+                </a>
 
-        </section>
+                <a href="#analytics" class="nav-link">
+                    <span>▥</span> Reports
+                </a>
 
-        <!-- Add Transaction -->
-        <section class="form-section">
+                <p class="nav-heading settings-heading">PREFERENCES</p>
 
-            <h2>Add Transaction</h2>
+                <a href="#add-transaction" class="nav-link">
+                    <span>⚙</span> Settings
+                </a>
+            </nav>
 
-            <form id="transaction-form">
+            <div class="sidebar-footer">
+                <p>Manage your money smarter.</p>
+            </div>
+        </aside>
 
-                <input
-                    type="text"
-                    id="title"
-                    placeholder="Transaction name"
-                    required
-                >
 
-                <input
-                    type="number"
-                    id="amount"
-                    placeholder="Amount (₹)"
-                    min="0.01"
-                    step="0.01"
-                    required
-                >
+        <!-- Main Content -->
+        <main class="main-content">
 
-                <select id="type">
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
-                </select>
+            <!-- Top Header -->
+            <header class="topbar">
+                <div>
+                    <p class="welcome-text">Welcome back!</p>
+                    <h1>Dashboard</h1>
+                </div>
 
-                <select id="category">
-                    <option value="Food">Food</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Education">Education</option>
-                    <option value="Bills">Bills</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Other">Other</option>
-                </select>
+                <div class="topbar-date">
+                    <span>💰</span>
+                    <span>My Finances</span>
+                </div>
+            </header>
 
-                <input type="date" id="date" required>
 
-                <button type="submit">+ Add Transaction</button>
+            <!-- Dashboard -->
+            <section class="dashboard-section" id="dashboard">
 
-            </form>
-
-        </section>
-
-        
-<section class="analytics">
-    <h2>Expense Analytics</h2>
-
-    <div class="chart-container">
-        <h3>Expenses by Category</h3>
-        <canvas id="categoryChart"></canvas>
+                
+<div class="section-heading history-heading">
+    <div>
+        <h2>Recent Transactions</h2>
+        <p>View and manage your transactions.</p>
     </div>
 
-    <div class="chart-container">
-        <h3>Income vs Expenses</h3>
-        <canvas id="comparisonChart"></canvas>
-    </div>
-</section>
-
-        <!-- Transaction History -->
-        <section class="history">
-
-            <h2>Transaction History</h2>
-
-            
-<div class="transaction-filters">
-
-    <input
-        type="text"
-        id="transaction-search"
-        placeholder="Search transactions..."
-    >
-
-    <select id="filter-type">
-        <option value="all">All Transactions</option>
-        <option value="income">Income Only</option>
-        <option value="expense">Expenses Only</option>
-    </select>
-
-    <select id="filter-category">
-        <option value="all">All Categories</option>
-        <option value="Food">Food</option>
-        <option value="Travel">Travel</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Education">Education</option>
-        <option value="Bills">Bills</option>
-        <option value="Salary">Salary</option>
-        <option value="Other">Other</option>
-    </select>
-
+    <button type="button" id="export-btn">
+        ↓ Export CSV
+    </button>
 </div>
 
-            <ul id="transaction-list">
-                <li class="empty-message">
-                    No transactions yet. Start by adding one!
-                </li>
-            </ul>
 
-        </section>
+
+                <!-- Summary Cards -->
+                <div class="summary">
+
+                    <div class="card income-card">
+                        <div class="card-top">
+                            <h3>Total Income</h3>
+                            <span class="card-icon">↗</span>
+                        </div>
+                        <p id="total-income">₹0</p>
+                    </div>
+
+                    <div class="card expense-card">
+                        <div class="card-top">
+                            <h3>Total Expense</h3>
+                            <span class="card-icon">↘</span>
+                        </div>
+                        <p id="total-expense">₹0</p>
+                    </div>
+
+                    <div class="card balance-card">
+                        <div class="card-top">
+                            <h3>Balance</h3>
+                            <span class="card-icon">₹</span>
+                        </div>
+                        <p id="total-balance">₹0</p>
+                    </div>
+
+                    <div class="summary-card monthly-card">
+                        <div class="card-top">
+                            <h3>This Month's Expenses</h3>
+                            <span class="card-icon">▦</span>
+                        </div>
+                        <h2 id="monthly-expense">₹0</h2>
+                    </div>
+
+                    <div class="summary-card comparison-card">
+                        <div class="card-top">
+                            <h3>Spending Comparison</h3>
+                            <span class="card-icon">◷</span>
+                        </div>
+                        <h2 id="monthly-comparison">No comparison yet</h2>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- Analytics -->
+            <section class="analytics" id="analytics">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Expense Analytics</h2>
+                        <p>Understand your income and spending.</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+
+                    <div class="chart-container">
+                        <h3>Expenses by Category</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Income vs Expenses</h3>
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <!-- Add Transaction -->
+            <section class="form-section" id="add-transaction">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Add Transaction</h2>
+                        <p>Record a new income or expense.</p>
+                    </div>
+                </div>
+
+                <form id="transaction-form">
+
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="Transaction name"
+                        minlength="2"
+                        maxlength="50"
+                        required
+                    >
+
+                    <input
+                        type="number"
+                        id="amount"
+                        placeholder="Amount (₹)"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                    <select id="type" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+
+                    <select id="category" required>
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Education">Education</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <input type="date" id="date" required>
+
+                    <button type="submit">+ Add Transaction</button>
+
+                </form>
+            </section>
+
+
+            <!-- Transaction History -->
+            <section class="history" id="history">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Recent Transactions</h2>
+                        <p>View and manage your transactions.</p>
+                    </div>
+                </div>
+
+                <div class="transaction-filters">
+
+                    <input
+                        type="text"
+                        id="transaction-search"
+                        placeholder="Search transactions..."
+                    >
+
+                    <select id="filter-type">
+                        <option value="all">All Transactions</option>
+                        <option value="income">Income Only</option>
+                        <option value="expense">Expenses Only</option>
+                    </select>
+
+                    <select id="filter-category">
+                        <option value="all">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Education">Education</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                </div>
+
+                <ul id="transaction-list">
+                    <li class="empty-message">
+                        No transactions yet. Start by adding one!
+                    </li>
+                </ul>
+
+            </section>
+
+            <footer class="main-footer">
+                <p>© 2026 Expenso. Manage your money smarter.</p>
+            </footer>
+
+        </main>
 
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>
